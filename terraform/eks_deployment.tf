@@ -1,0 +1,150 @@
+data "aws_ecr_repository" "container_repo" {
+  name = "demo-image-processor-container"
+}
+resource "kubernetes_namespace_v1" "this" {
+  metadata {
+    name = local.app_name
+  }
+}
+
+locals {
+  app_name = "app-demo-up-eks-pod"
+}
+resource "kubernetes_deployment_v1" "this" {
+  metadata {
+    name      = local.app_name
+    namespace = kubernetes_namespace_v1.this.metadata[0].name
+  }
+
+  spec {
+    replicas = 2
+
+    selector {
+      match_labels = {
+        "app.kubernetes.io/name" = local.app_name
+      }
+    }
+
+    template {
+      metadata {
+        labels = {
+          "app.kubernetes.io/name" = local.app_name
+        }
+      }
+
+      spec {
+        service_account_name = kubernetes_service_account.s3_access_sa.metadata[0].name
+        container {
+          image = "${aws_ecr_repository.container_repo.repository_url}:latest"
+          # image_pull_policy = "Always"
+          name = local.app_name
+          env {
+            name  = "ENGINE"
+            value = "EKS" # replace with your actual value
+          }
+          port {
+            container_port = 8000
+          }
+          resources {
+            requests = {
+              cpu    = "512m"
+              memory = "1024Mi"
+            }
+
+            limits = {
+              cpu    = "1024m"
+              memory = "2048Mi"
+            }
+          }
+        }
+      }
+    }
+  }
+  depends_on = [
+    module.eks_blueprints_addons
+  ]
+}
+
+resource "kubernetes_service_v1" "this" {
+  metadata {
+    name      = local.app_name
+    namespace = kubernetes_namespace_v1.this.metadata[0].name
+  }
+
+  spec {
+    selector = {
+      "app.kubernetes.io/name" = local.app_name
+    }
+
+    port {
+      port        = 5000
+      target_port = 8000
+      protocol    = "TCP"
+    }
+
+    type = "NodePort"
+  }
+  depends_on = [
+    module.eks_blueprints_addons
+  ]
+}
+
+resource "kubernetes_service_account" "s3_access_sa" {
+  metadata {
+    name      = "s3-access-sa"
+    namespace = kubernetes_namespace_v1.this.metadata[0].name
+    annotations = {
+      "eks.amazonaws.com/role-arn" = aws_iam_role.eks_worker_node_role.arn
+    }
+  }
+
+  automount_service_account_token = true
+}
+
+
+/*resource "kubernetes_manifest" "alb_ingress" {
+  manifest = {
+    apiVersion = "networking.k8s.io/v1"
+    kind       = "Ingress"
+    metadata = {
+      name      = local.app_name
+      namespace = kubernetes_namespace_v1.this.metadata[0].name
+      annotations = {
+        "kubernetes.io/ingress.class"               = "alb"
+        "alb.ingress.kubernetes.io/scheme"          = "internet-facing"
+        "alb.ingress.kubernetes.io/target-type"     = "ip"
+        "alb.ingress.kubernetes.io/listen-ports"    = "[{\"HTTPS\":443}]"
+        "alb.ingress.kubernetes.io/certificate-arn" = aws_acm_certificate.eks_api_certificate.arn
+
+      }
+    }
+
+    spec = {
+      ingressClassName = "alb"
+      rules = [
+        {
+          http = {
+            paths = [
+              {
+                path     = "/*"
+                pathType = "Prefix"
+                backend = {
+                  service = {
+                    name = local.app_name
+                    port = {
+                      number = 5000
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+  depends_on = [
+    module.eks_blueprints_addons
+  ]
+}
+*/

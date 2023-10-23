@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: mendhak
+spec:
+  containers:
+  - name: mendhak
+    image: mendhak/http-https-echo
+    ports:
+    - containerPort: 8443

@@ -1,0 +1,25 @@
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: app-demo-up-eks-pod
+  namespace: app-demo-up-eks-pod
+spec:
+  maxReplicas: 100
+  metrics:
+  - resource:
+      name: cpu
+      target:
+        averageUtilization: 50
+        type: Utilization
+    type: Resource
+  minReplicas: 2
+  behavior:
+    scaleUp:
+      policies:
+      - type: Percent
+        value: 900
+        periodSeconds: 5
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: app-demo-up-eks-pod

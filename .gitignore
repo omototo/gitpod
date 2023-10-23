@@ -1,0 +1,13 @@
+node_modules/*
+general/node_modules/*
+general/package-lock.json
+terraform/.terraform.lock.hcl
+terraform/terraform.tfstate
+terraform/terraform.tfstate.backup
+terraform/.terraform/*
+proxy/terraform/.terraform/*
+test/__pycache__/*
+proxy/terraform/terraform.tfstate.backup
+proxy/terraform/terraform.tfstate
+.DS_Store
+proxy/terraform/.terraform.lock.hcl
