@@ -8,7 +8,7 @@ spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: app-demo-up-on-steroids  # This targets your specific deployment
+    name: app-demo-on-steroids  # This targets your specific deployment
   minReplicas: 1
   maxReplicas: 100
   metrics:

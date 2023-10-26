@@ -13,3 +13,4 @@ proxy/terraform/terraform.tfstate
 proxy/terraform/.terraform.lock.hcl
 terraform/aws/*
 terraform/awscliv2.zip
+test/wrk.log

@@ -4,7 +4,7 @@ metadata:
   name: app-demo-on-steroids
   # No namespace specified, so 'default' is used
 spec:
-  replicas: 4
+  replicas: 1
   selector:
     matchLabels:
       app.kubernetes.io/name: app-demo-on-steroids
