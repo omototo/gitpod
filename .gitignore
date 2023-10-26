@@ -11,3 +11,5 @@ proxy/terraform/terraform.tfstate.backup
 proxy/terraform/terraform.tfstate
 .DS_Store
 proxy/terraform/.terraform.lock.hcl
+terraform/aws/*
+terraform/awscliv2.zip

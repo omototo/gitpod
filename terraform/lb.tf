@@ -30,9 +30,9 @@ resource "aws_lb_target_group" "lb_tg" {
 resource "aws_lb_listener" "listener" {
   load_balancer_arn = aws_lb.lb.arn
   port              = 8000
-  protocol          = "HTTPS"
-  ssl_policy        = "ELBSecurityPolicy-2016-08" # Choose an appropriate SSL policy based on your needs
-  certificate_arn   = aws_acm_certificate.ecs_api_certificate.arn
+  protocol          = "HTTP"
+  #ssl_policy        = "ELBSecurityPolicy-2016-08" # Choose an appropriate SSL policy based on your needs
+  #certificate_arn   = aws_acm_certificate.ecs_api_certificate.arn
 
   default_action {
     type             = "forward"

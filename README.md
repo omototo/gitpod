@@ -15,14 +15,14 @@ Already a pro? Just edit this README.md and make it your own. Want to make it ea
 
 ```
 cd existing_repo
-git remote add origin https://gitlab.aws.dev/alschmic/demo-container-scaling.git
+git remote add origin https://gitlab.aws.dev........
 git branch -M main
 git push -uf origin main
 ```
 
 ## Integrate with your tools
 
-- [ ] [Set up project integrations](https://gitlab.aws.dev/alschmic/demo-container-scaling/-/settings/integrations)
+- [ ] [Set up project integrations]
 
 ## Collaborate with your team
 

@@ -35,6 +35,9 @@ resource "aws_lambda_permission" "allow_api_gateway" {
 }
 
 resource "aws_api_gateway_deployment" "deployment" {
+  depends_on = [
+    aws_api_gateway_integration.integration
+  ]
   rest_api_id = aws_api_gateway_rest_api.my_api.id
 
   triggers = {
@@ -54,10 +57,6 @@ resource "aws_api_gateway_stage" "example" {
   description           = "My demo API deployment"
   xray_tracing_enabled  = true
 
-  access_log_settings {
-    destination_arn = aws_cloudwatch_log_group.example.arn
-    format          = "$context.identity.sourceIp - - [$context.requestTime] \"$context.httpMethod $context.routeKey $context.protocol\" $context.status $context.responseLength $context.requestId \"$context.identity.userAgent\" $context.domainName $context.domainPrefix"
-  }
 
   # Ensure updates to the integration causes a new deployment.
   lifecycle {
@@ -65,13 +64,6 @@ resource "aws_api_gateway_stage" "example" {
   }
 }
 
-resource "aws_cloudwatch_log_group" "example" {
-  name = "api-gateway-logs"
-}
-
-resource "aws_api_gateway_account" "api_gateway_account" {
-  cloudwatch_role_arn = aws_iam_role.api_gateway_cloudwatch_logs.arn
-}
 
 resource "aws_api_gateway_method_settings" "settings" {
   rest_api_id = aws_api_gateway_rest_api.my_api.id

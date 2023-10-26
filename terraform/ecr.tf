@@ -40,8 +40,9 @@ resource "null_resource" "build_and_push_container" {
       AWS_DEFAULT_REGION = var.aws_region
     }
   }
+  /*
   triggers = {
     always_run = "${timestamp()}"
-  }
+  }*/
   depends_on = [aws_ecr_repository.container_repo]
 }

@@ -3,11 +3,12 @@ data "aws_availability_zones" "available" {}
 
 locals {
   name     = "demo-vpc"
+  eks_name = "demo-eks-cluster"
   vpc_cidr = "10.0.0.0/16"
   region   = "eu-central-1"
   azs      = slice(data.aws_availability_zones.available.names, 0, 3)
   tags = {
-    Blueprint  = local.name
+    Blueprint  = local.eks_name
     GitHubRepo = "github.com/omototo/gitpod"
   }
 }

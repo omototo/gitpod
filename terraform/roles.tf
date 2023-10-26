@@ -51,7 +51,7 @@ resource "aws_iam_policy" "s3_access" {
           "s3:ListBucket"
         ],
         Effect   = "Allow",
-        Resource = ["arn:aws:s3:::demo-images-imagemagick", "arn:aws:s3:::demo-images-imagemagick/*"]
+        Resource = ["arn:aws:s3:::hello-demo-images-bucket", "arn:aws:s3:::hello-demo-images-bucket/*"]
       }
     ]
   })
@@ -259,7 +259,7 @@ resource "aws_iam_policy" "eks_worker_node_s3_ecr_policy" {
           "s3:ListBucket"
         ],
         Effect   = "Allow",
-        Resource = ["arn:aws:s3:::demo-images-imagemagick", "arn:aws:s3:::demo-images-imagemagick/*"]
+        Resource = ["arn:aws:s3:::demo-images-imagemagick", "arn:aws:s3:::hello-demo-images-bucket/*"]
       },
       {
         Action = [

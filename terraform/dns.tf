@@ -1,4 +1,4 @@
-data "aws_route53_zone" "myzone" {
+/*data "aws_route53_zone" "myzone" {
   name = "alschmic.people.aws.dev." # Replace this with your domain name (notice the trailing dot)
 }
 
@@ -134,3 +134,4 @@ resource "aws_route53_record" "eks_alb_record" {
     evaluate_target_health = false
   }
 }
+*/

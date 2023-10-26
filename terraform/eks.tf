@@ -56,7 +56,7 @@ module "eks" {
   source  = "terraform-aws-modules/eks/aws"
   version = "~> 19.16"
 
-  cluster_name                   = local.name
+  cluster_name                   = local.eks_name
   cluster_version                = "1.27"
   cluster_endpoint_public_access = true
 
@@ -66,7 +66,7 @@ module "eks" {
   # Fargate profiles use the cluster primary security group so these are not utilized
   create_cluster_security_group = false
   create_node_security_group    = false
-
+  
   manage_aws_auth_configmap = true
   aws_auth_roles = [
     # We need to add in the Karpenter node IAM role for nodes launched by Karpenter
@@ -92,18 +92,9 @@ module "eks" {
         { namespace = "kube-system" }
       ]
     }
-    app_wildcard = {
-      selectors = [
-        { namespace = "app-*" }
-      ]
-    }
 
   }
-  fargate_profile_defaults = {
-    iam_role_additional_policies = {
-      additional = module.eks_blueprints_addons.fargate_fluentbit.iam_policy[0].arn
-    }
-  }
+  
   tags = merge(local.tags, {
     # NOTE - if creating multiple security groups with this module, only tag the
     # security group that Karpenter should utilize with the following tag
@@ -169,11 +160,7 @@ module "eks_blueprints_addons" {
   }*/
   #enable_kube_prometheus_stack        = true
 
-  enable_fargate_fluentbit = true
-  fargate_fluentbit = {
-    flb_log_cw = true
-  }
-
+  
   enable_aws_load_balancer_controller = true
 
   aws_load_balancer_controller = {
