@@ -58,10 +58,10 @@ resource "aws_security_group" "haproxy_lb_sg" {
 
 resource "aws_lb_listener" "haproxy_https_listener" {
   load_balancer_arn = aws_lb.haproxy_lb.arn
-  port              = 443
-  protocol          = "HTTPS"
-  ssl_policy        = "ELBSecurityPolicy-2016-08" # Choose an appropriate SSL policy based on your needs
-  certificate_arn   = data.aws_acm_certificate.my_certificate.arn
+  port              = 80
+  protocol          = "HTTP"
+  #ssl_policy        = "ELBSecurityPolicy-2016-08" # Choose an appropriate SSL policy based on your needs
+  #certificate_arn   = data.aws_acm_certificate.my_certificate.arn
 
   default_action {
     type             = "forward"
@@ -86,7 +86,7 @@ resource "aws_lb_listener_rule" "stats_rule" {
 }
 
 
-data "aws_route53_zone" "myzone" {
+/*data "aws_route53_zone" "myzone" {
   name = "alschmic.people.aws.dev." # Replace this with your domain name (notice the trailing dot)
 }
 
@@ -101,4 +101,4 @@ resource "aws_route53_record" "wildcard_alb_record" {
     evaluate_target_health = false
   }
 }
-
+*/

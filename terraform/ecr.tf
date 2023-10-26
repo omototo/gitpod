@@ -31,17 +31,26 @@ resource "null_resource" "build_and_push_container" {
     command = <<EOT
       cd ../general
       $(aws ecr get-login --no-include-email --region ${var.aws_region})
-      docker build -t ${aws_ecr_repository.container_repo.repository_url} .
-      docker tag ${aws_ecr_repository.container_repo.repository_url} ${aws_ecr_repository.container_repo.repository_url}:latest
-      docker push ${aws_ecr_repository.container_repo.repository_url}:latest
+      
+      # Create a new builder instance
+      docker buildx create --use --name multiarchbuilder
+      
+      # Starting up the instances, ensuring they are using the right drivers and are available
+      docker buildx inspect multiarchbuilder --bootstrap
+
+      # Building the multi-architecture image
+      docker buildx build --platform linux/amd64,linux/arm64 -t ${aws_ecr_repository.container_repo.repository_url}:latest --push .
+
+      # Clean up, remove the builder instance after the build is complete
+      docker buildx rm multiarchbuilder
     EOT
 
     environment = {
       AWS_DEFAULT_REGION = var.aws_region
     }
   }
-  /*
-  triggers = {
+
+  /*triggers = {
     always_run = "${timestamp()}"
   }*/
   depends_on = [aws_ecr_repository.container_repo]

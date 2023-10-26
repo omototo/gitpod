@@ -66,7 +66,7 @@ module "eks" {
   # Fargate profiles use the cluster primary security group so these are not utilized
   create_cluster_security_group = false
   create_node_security_group    = false
-  
+
   manage_aws_auth_configmap = true
   aws_auth_roles = [
     # We need to add in the Karpenter node IAM role for nodes launched by Karpenter
@@ -94,12 +94,12 @@ module "eks" {
     }
 
   }
-  
+
   tags = merge(local.tags, {
     # NOTE - if creating multiple security groups with this module, only tag the
     # security group that Karpenter should utilize with the following tag
     # (i.e. - at most, only one security group should have this tag in your account)
-    "karpenter.sh/discovery" = local.name
+    "karpenter.sh/discovery" = local.eks_name
   })
 }
 
@@ -160,7 +160,7 @@ module "eks_blueprints_addons" {
   }*/
   #enable_kube_prometheus_stack        = true
 
-  
+
   enable_aws_load_balancer_controller = true
 
   aws_load_balancer_controller = {
@@ -183,6 +183,7 @@ module "eks_blueprints_addons" {
     wait                = true
     repository_username = data.aws_ecrpublic_authorization_token.token.user_name
     repository_password = data.aws_ecrpublic_authorization_token.token.password
+
   }
 
   tags = local.tags
@@ -202,10 +203,10 @@ resource "kubectl_manifest" "karpenter_provisioner" {
       requirements:
         - key: "karpenter.k8s.aws/instance-category"
           operator: In
-          values: ["c", "m"]
+          values: ["c", "m", "r", "t", "x"]
         - key: "karpenter.k8s.aws/instance-cpu"
           operator: In
-          values: ["8", "16", "32"]
+          values: ["8", "16", "32", "64"]
         - key: "karpenter.k8s.aws/instance-hypervisor"
           operator: In
           values: ["nitro"]
@@ -214,7 +215,7 @@ resource "kubectl_manifest" "karpenter_provisioner" {
           values: ${jsonencode(local.azs)}
         - key: "kubernetes.io/arch"
           operator: In
-          values: ["arm64", "amd64"]
+          values: [ "amd64"]
         - key: "karpenter.sh/capacity-type" # If not included, the webhook for the AWS cloud provider will default to on-demand
           operator: In
           values: ["spot", "on-demand"]
@@ -244,7 +245,7 @@ resource "kubectl_manifest" "karpenter_node_template" {
       name: default
     spec:
       subnetSelector:
-        karpenter.sh/discovery: ${module.eks.cluster_name}
+        karpenter.sh/discovery: ${local.name}
       securityGroupSelector:
         karpenter.sh/discovery: ${module.eks.cluster_name}
       instanceProfile: ${module.eks_blueprints_addons.karpenter.node_instance_profile_name}

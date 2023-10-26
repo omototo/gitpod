@@ -37,7 +37,7 @@ data "aws_subnets" "demo_private" {
   }
 }
 
-data "aws_acm_certificate" "my_certificate" {
+/*data "aws_acm_certificate" "my_certificate" {
   domain   = "alschmic.people.aws.dev"
   statuses = ["ISSUED"]
-}
+}*/

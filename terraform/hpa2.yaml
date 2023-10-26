@@ -1,0 +1,32 @@
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: app-demo-up-on-steroids-hpa  # Naming the HPA relevant to the deployment
+  # Since you didn't specify a namespace for app-demo-up-on-steroids, it is assumed to be 'default'
+  # If the deployment is in a different namespace, specify that namespace here.
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: app-demo-up-on-steroids  # This targets your specific deployment
+  minReplicas: 1
+  maxReplicas: 100
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 30  # This percentage value signifies the CPU utilization threshold
+  behavior:  
+    scaleDown:
+      stabilizationWindowSeconds: 300  # This can prevent the HPA from rapidly scaling down, immediately after scaling up.
+      policies:
+      - type: Percent
+        value: 100  # Allows scale down by up to 100% of the current replica count
+        periodSeconds: 15  # Considering the scale-down if underutilization continues for this period
+    scaleUp:
+      policies:
+      - type: Percent
+        value: 1200  # Allows scale up by up to 1200% of the current replica count
+        periodSeconds: 2  # Very aggressive scale-up in response to increased load

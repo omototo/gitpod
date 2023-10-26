@@ -46,8 +46,8 @@ backend farm
     option redispatch  # Allow rerouting to a different server on a connection failure
     balance roundrobin
     http-response lua.retry_on_non_200
-    server ecs_lb ${lb_dns_name} ssl verify none check on-marked-down shutdown-sessions
-    server eks_lb ${eks_name} ssl verify none check on-marked-down shutdown-sessions
+    server ecs_lb ${lb_dns_name} check on-marked-down shutdown-sessions
+    server eks_lb ${eks_name} check on-marked-down shutdown-sessions
     server lambda_backup ${lambda_url} ssl verify none backup  # Lambda trigger endpoint
     #http-request set-header Host SET HEADER
     retry-on all-retryable-errors

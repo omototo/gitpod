@@ -3,7 +3,7 @@ data "aws_availability_zones" "available" {}
 
 locals {
   name     = "demo-vpc"
-  eks_name = "demo-eks-cluster"
+  eks_name = "cluster-on-steroids"
   vpc_cidr = "10.0.0.0/16"
   region   = "eu-central-1"
   azs      = slice(data.aws_availability_zones.available.names, 0, 3)

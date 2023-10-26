@@ -1,0 +1,101 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-demo-on-steroids
+  # No namespace specified, so 'default' is used
+spec:
+  replicas: 4
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: app-demo-on-steroids
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: app-demo-on-steroids
+    spec:
+      serviceAccountName: s3-access-sa  # Ensure this service account is created beforehand
+      containers:
+      - name: app-demo-on-steroids
+        image: 689342893243.dkr.ecr.eu-central-1.amazonaws.com/demo-image-processor-container:latest
+        ports:
+        - containerPort: 8000
+        env:
+        - name: ENGINE
+          value: "EKS"
+        resources:
+          requests:
+            cpu: "512m"
+            memory: "1024Mi"
+          limits:
+            cpu: "1024m"
+            memory: "2048Mi"
+      nodeSelector:
+        kubernetes.io/arch: amd64
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: app-demo-on-steroids-service
+spec:
+  selector:
+    app.kubernetes.io/name: app-demo-on-steroids
+  ports:
+    - protocol: TCP
+      port: 5000
+      targetPort: 8000
+  type: NodePort
+
+---
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: app-demo-on-steroids-ingress
+  annotations:
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    # Add the line below if you are working with HTTPS, and replace the placeholder with your actual certificate ARN
+    # alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:REGION:ACCOUNT_ID:certificate/CERTIFICATE_ID
+    # Additional settings for health checks, SSL policy, etc., can also be added here
+spec:
+  rules:
+    - http:
+        paths:
+          - path: /  # Adjust the path based on how you want to route the traffic
+            pathType: Prefix
+            backend:
+              service:
+                name: app-demo-on-steroids-service
+                port:
+                  number: 5000  # This should match the 'port' in your service configuration
+
+---
+# role.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: default
+  name: s3-access-role
+rules:
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["get", "watch", "list"] # adjust the verbs according to the specific permissions your pod needs
+
+---
+# rolebinding.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: s3-access-role-binding
+  namespace: default
+subjects:
+- kind: ServiceAccount
+  name: s3-access-sa
+  namespace: default
+roleRef:
+  kind: Role
+  name: s3-access-role
+  apiGroup: rbac.authorization.k8s.io

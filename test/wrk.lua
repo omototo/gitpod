@@ -1,4 +1,4 @@
-wrk.path  = "/flip-image/test?bucket=demo-images-imagemagick&key=input/pizza_image_L.jpg"
+wrk.path  = "/flip-image/test?bucket=hello-demo-images-bucket&key=input/image-50.jpg"
 wrk.method = "GET"
 
 logfile = io.open("wrk.log", "w");
