@@ -46,6 +46,6 @@ sleep 1
 clear
 
 # Execute the wrk command
-wrk -t02 -c200 -d120s "https://proxy.alexp-aws-test.gitpod.cloud/" -s wrk.lua
+wrk -t02 -c200 -d120s "https://haproxy-lb-1563643291.eu-central-1.elb.amazonaws.com/" -s wrk.lua
 
 # Script ends here
