@@ -20,11 +20,11 @@ spec:
         averageUtilization: 30  # This percentage value signifies the CPU utilization threshold
   behavior:  
     scaleDown:
-      stabilizationWindowSeconds: 300  # This can prevent the HPA from rapidly scaling down, immediately after scaling up.
+      stabilizationWindowSeconds: 100  # This can prevent the HPA from rapidly scaling down, immediately after scaling up.
       policies:
       - type: Percent
         value: 100  # Allows scale down by up to 100% of the current replica count
-        periodSeconds: 15  # Considering the scale-down if underutilization continues for this period
+        periodSeconds: 10  # Considering the scale-down if underutilization continues for this period
     scaleUp:
       policies:
       - type: Percent

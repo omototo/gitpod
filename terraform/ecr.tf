@@ -50,8 +50,8 @@ resource "null_resource" "build_and_push_container" {
     }
   }
 
-  /*triggers = {
+  triggers = {
     always_run = "${timestamp()}"
-  }*/
+  }
   depends_on = [aws_ecr_repository.container_repo]
 }

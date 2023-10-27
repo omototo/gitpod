@@ -26,14 +26,14 @@ resource "null_resource" "build_and_push_proxy" {
     always_run = "${timestamp()}"
   }
 
-  depends_on = [aws_ecr_repository.haproxy_repo]
+  depends_on = [aws_ecr_repository.haproxy_repo, null_resource.deal_with_LF]
 }
 
 #Populates haproxy.cfg file with the DNS name of the load balancer and API Gateway URL
 locals {
   haproxy_config = templatefile("${path.module}/../docker/haproxy.cfg.tpl", {
-    lb_dns_name = "demo-lb-1001628964.eu-central-1.elb.amazonaws.com:8000"
-    eks_name    = "k8s-default-appdemoo-49249c2a67-2057678998.eu-central-1.elb.amazonaws.com:80"
+    lb_dns_name = "ecs.alexp-aws-test.gitpod.cloud:8000"
+    eks_name    = "eks.alexp-aws-test.gitpod.cloud:443"
     lambda_url  = "0hqkeyfay0.execute-api.eu-central-1.amazonaws.com:443"
   })
 }

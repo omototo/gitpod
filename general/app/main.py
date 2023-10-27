@@ -4,6 +4,7 @@ import logging
 import os 
 
 import boto3
+import random
 from wand.image import Image
 
 app = FastAPI()
@@ -28,7 +29,7 @@ async def flip_image(bucket: str, key: str, fail: bool = False):
             img.save(filename="/tmp/flipped_image.jpg")
         
         # Upload flipped image back to S3 in the 'processed' folder
-        upload_path = "processed/" + key.split("/")[-1]
+        upload_path = "processed/" + str(random.randrange(10)) + "/" + key.split("/")[-1]
         s3.upload_file("/tmp/flipped_image.jpg", bucket, upload_path)
 
         # Generate S3 URL for the uploaded image
