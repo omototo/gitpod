@@ -15,8 +15,8 @@ defaults
     timeout queue           1m
     timeout connect         10s
     timeout client          2m
-    timeout server          20s
-    timeout http-keep-alive 50s
+    timeout server          40s
+    timeout http-keep-alive 60s
     timeout check           5s
 
 listen health_check_http_url

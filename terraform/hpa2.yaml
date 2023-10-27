@@ -9,7 +9,7 @@ spec:
     apiVersion: apps/v1
     kind: Deployment
     name: app-demo-on-steroids  # This targets your specific deployment
-  minReplicas: 1
+  minReplicas: 4
   maxReplicas: 100
   metrics:
   - type: Resource
